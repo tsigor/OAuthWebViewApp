@@ -6,6 +6,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 
+/*
+https://futurestud.io/tutorials/oauth-2-on-android-with-retrofit
+
+        https://habr.com/ru/post/314028/
+        https://habr.com/ru/post/429058/
+*/
+
+
 public class MainActivity extends AppCompatActivity {
 /*
 Зарегистрируйте свое приложение на GitHub
