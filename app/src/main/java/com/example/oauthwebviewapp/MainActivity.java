@@ -1,6 +1,8 @@
 package com.example.oauthwebviewapp;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -27,7 +29,9 @@ public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
     private ProgressDialog pd;
-
+    private final String clientId = "your-client-id";
+    private final String clientSecret = "your-client-secret";
+    private final String redirectUri = "your://redirecturi";
 
 /*    https://futurestud.io/tutorials/oauth-2-on-android-with-retrofit*/
 
@@ -36,16 +40,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //get the webView from the layout
-        webView = (WebView) findViewById(R.id.main_activity_web_view);
-
-        //Request focus for the webview
-        webView.requestFocus(View.FOCUS_DOWN);
-
-        //Show a progress dialog to the user
-        pd = ProgressDialog.show(this, "", this.getString(R.string.loading),true);
-
+        Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse("https://github.com/login/oauth/authorize"+ "?client_id="+clientId+"&scope=repo&reditect_uri="+redirectUri));
+        startActivity(intent);
 
 
     }
-}
+ }
