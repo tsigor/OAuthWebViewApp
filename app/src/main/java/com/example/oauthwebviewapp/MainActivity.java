@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 /*
 https://futurestud.io/tutorials/oauth-2-on-android-with-retrofit
@@ -15,6 +16,14 @@ https://futurestud.io/tutorials/oauth-2-on-android-with-retrofit
         https://habr.com/ru/post/429058/
 */
 
+
+/*
+Already Registered On github
+https://github.com/settings/applications/1342416
+Client ID
+225f92b4f4dafca529ce
+Client Secret
+e89bdce53af6b5b43f8749200dfde02e4958d18f */
 
 public class MainActivity extends AppCompatActivity {
 /*
@@ -29,9 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
     private ProgressDialog pd;
-    private final String clientId = "your-client-id";
-    private final String clientSecret = "your-client-secret";
-    private final String redirectUri = "your://redirecturi";
+    private final String clientId = "225f92b4f4dafca529ce";
+    private final String clientSecret = "e89bdce53af6b5b43f8749200dfde02e4958d18f";
+    private final String redirectUri = "https://www.google.com";
 
 /*    https://futurestud.io/tutorials/oauth-2-on-android-with-retrofit*/
 
@@ -45,4 +54,15 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Uri uri = getIntent().getData();
+        if (uri != null){
+            Toast.makeText(this,"yaou",Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
  }
