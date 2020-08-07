@@ -60,9 +60,19 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse("https://github.com/login/oauth/authorize"+ "?client_id="+clientId+"&scope=repo&reditect_uri="+redirectUri));
         startActivity(intent);
+        //get the webView from the layout
+        webView = (WebView) findViewById(R.id.main_activity_web_view);
+
+        //Request focus for the webview
+        webView.requestFocus(View.FOCUS_DOWN);
+
+        //Show a progress dialog to the user
+        pd = ProgressDialog.show(this, "", this.getString(R.string.loading),true);
 
 
     }
+
+
 
     @Override
     protected void onResume() {
