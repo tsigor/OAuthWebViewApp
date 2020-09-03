@@ -13,7 +13,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-public interface GitHubClient {
+public interface GitHubApi {
 
     @Headers("Accept: application/json") //rtetrofit add this to the request
 

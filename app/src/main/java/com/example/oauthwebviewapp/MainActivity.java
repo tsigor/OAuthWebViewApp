@@ -10,7 +10,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.example.oauthwebviewapp.model.AccessToken;
-import com.example.oauthwebviewapp.service.GitHubClient;
+import com.example.oauthwebviewapp.service.GitHubApi;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
             Retrofit retrofit = builder.build();
 
-            GitHubClient client = retrofit.create(GitHubClient.class);
+            GitHubApi client = retrofit.create(GitHubApi.class);
             Call<AccessToken> accessTokenCall= client.getAccessToken(
                     clientId,
                     clientSecret,
