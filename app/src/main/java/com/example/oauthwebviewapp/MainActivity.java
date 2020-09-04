@@ -57,11 +57,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse("https://github.com/login/oauth/authorize"+ "?client_id="+clientId+"&scope=repo&reditect_uri="+redirectUri));
-        startActivity(intent);
         //get the webView from the layout
         webView = (WebView) findViewById(R.id.main_activity_web_view);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse("https://github.com/login/oauth/authorize"+ "?client_id="+clientId+"&scope=repo&reditect_uri="+redirectUri));
+        //  webView.loadUrl("https://github.com/login/oauth/authorize?client_id="+App.CLIENT_ID+"&scope=user%20repo");
+
+        startActivity(intent);
+
 
         //Request focus for the webview
         webView.requestFocus(View.FOCUS_DOWN);
@@ -74,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+/*
     @Override
     protected void onResume() {
         super.onResume();
@@ -111,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-    }
+    } //onResume
+*/
 
  }
