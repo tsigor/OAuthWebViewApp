@@ -1,32 +1,31 @@
 package com.example.oauthwebviewapp.service;
 
-import com.example.oauthwebviewapp.model.AccessToken;
-import com.example.oauthwebviewapp.model.GitHubRepo;
+import com.example.oauthwebviewapp.model.AccessTokenResponse;
 
-import java.util.List;
+import com.example.oauthwebviewapp.repository.CreateRepositoryRequest;
+import com.example.oauthwebviewapp.repository.CreateRepositoryResponse;
+import com.example.oauthwebviewapp.user.UserRequest;
+import com.example.oauthwebviewapp.user.UserResponse;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
-import retrofit2.http.Path;
 
 public interface GitHubApi {
 
-    @Headers("Accept: application/json") //rtetrofit add this to the request
-
-    @POST("/login/oauth/access_token")
     @FormUrlEncoded
-    Call<AccessToken> getAccessToken(
-            //send 3 fields
-            @Field("client_id") String clientId,
-            @Field("client_secret") String clientSecret,
-            @Field("code") String code
+    @POST("https://github.com/login/oauth/access_token")
+    @Headers("Accept: application/json")
+    Call<AccessTokenResponse> getAccessToken(@Field("client_id") String clientId,
+                                             @Field("client_secret") String clientSecret,
+                                             @Field("code") String code);
 
-    );
+    @POST("user")
+    Call<UserResponse> getUser(@Body UserRequest userRequest);
 
-    @GET ("/users/{user}/repos")
-    Call<List<GitHubRepo>> reposForUser(@Path("user") String user);
+    @POST("user")
+    Call<CreateRepositoryResponse> createRepository(@Body CreateRepositoryRequest createRepositoryRequest);
 }

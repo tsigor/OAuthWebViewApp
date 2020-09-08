@@ -6,17 +6,16 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.Toast;
+import android.webkit.WebViewClient;
 
-import com.example.oauthwebviewapp.model.AccessToken;
-import com.example.oauthwebviewapp.service.GitHubApi;
+import com.example.oauthwebviewapp.model.AccessTokenResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /*
 https://futurestud.io/tutorials/oauth-2-on-android-with-retrofit
@@ -57,65 +56,50 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //get the webView from the layout
-        webView = (WebView) findViewById(R.id.main_activity_web_view);
+
+        webView = (WebView) findViewById(R.id.main_activity_web_view); //get the webView from the layout
 
         Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse("https://github.com/login/oauth/authorize"+ "?client_id="+clientId+"&scope=repo&reditect_uri="+redirectUri));
-        //  webView.loadUrl("https://github.com/login/oauth/authorize?client_id="+App.CLIENT_ID+"&scope=user%20repo");
 
-        startActivity(intent);
+        WebViewClient webViewClient = new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                Uri url = request.getUrl();
+                String host = url.getHost();
+                if(host.equals("github.com")){
+                    return false;
+                } else if(host.equals(redirectUri)){
+                    String code = url.getQueryParameter("code");
+                    App.getGitHubApi().getAccessToken(App.CLIENT_ID, App.CLIENT_SECRET, code)
+                            .enqueue(new Callback<AccessTokenResponse>() {
+                                @Override
+                                public void onResponse(Call<AccessTokenResponse> call, Response<AccessTokenResponse> response) {
+                                    MyPreferences.setToken(response.body().getAccessToken());
+                                    App.initApi();
+                                    startActivity(new Intent(MainActivity.this, CreateRepositoryActivity.class));
+                                    finish();
+                                }
 
+                                @Override
+                                public void onFailure(Call<AccessTokenResponse> call, Throwable t) {
 
-        //Request focus for the webview
-        webView.requestFocus(View.FOCUS_DOWN);
+                                }
+                            });
 
-        //Show a progress dialog to the user
-        pd = ProgressDialog.show(this, "", this.getString(R.string.loading),true);
+                } else {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, request.getUrl());
+                    startActivity(intent);
+                }
+                return super.shouldOverrideUrlLoading(view, request);
+            }
+        };
+        webView.setWebViewClient(webViewClient);
 
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        webView.loadUrl("https://github.com/login/oauth/authorize?client_id="+App.CLIENT_ID+"&scope=user%20repo");
 
     }
 
-
-
-/*
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Uri uri = getIntent().getData();
-        if (uri != null&& uri.toString().startsWith(redirectUri)){
-
-            String code = uri.getQueryParameter("code");
-            Retrofit.Builder builder = new Retrofit.Builder()
-                    .baseUrl("https://github.com/")
-                    .addConverterFactory(GsonConverterFactory.create());
-
-            Retrofit retrofit = builder.build();
-
-            GitHubApi client = retrofit.create(GitHubApi.class);
-            Call<AccessToken> accessTokenCall= client.getAccessToken(
-                    clientId,
-                    clientSecret,
-                    code
-            );
-            accessTokenCall.enqueue(new Callback<AccessToken>() {
-                @Override
-                public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
-                    Toast.makeText(MainActivity.this,"ja ja" ,Toast.LENGTH_SHORT).show();
-
-                }
-
-                @Override
-                public void onFailure(Call<AccessToken> call, Throwable t) {
-                    Toast.makeText(MainActivity.this,"nicht",Toast.LENGTH_SHORT).show();
-
-                }
-            });
-
-
-
-        }
-
-    } //onResume
-*/
-
- }
+}

@@ -2,7 +2,7 @@ package com.example.oauthwebviewapp.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class AccessToken {
+public class AccessTokenResponse {
     @SerializedName("access_token")
     private String accessToken;
     @SerializedName("token_type")

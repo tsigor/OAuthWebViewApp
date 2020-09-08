@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CreateRepositoryActivity"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/etRepositoryName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter repository name"/>
+
+    <Button
+        android:id="@+id/btnCreateRepository"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create repository"/>
+
+    <Button
+        android:id="@+id/btnOpenRepository"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Open repository in browser"
+        android:visibility="gone"/>
+
+</LinearLayout>
