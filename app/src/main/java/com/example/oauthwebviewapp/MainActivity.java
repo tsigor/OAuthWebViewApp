@@ -1,11 +1,9 @@
 package com.example.oauthwebviewapp;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -35,11 +33,7 @@ e89bdce53af6b5b43f8749200dfde02e4958d18f */
 
 public class MainActivity extends AppCompatActivity {
 
-    private WebView webView;
-    private ProgressDialog pd;
-    private final String clientId = "225f92b4f4dafca529ce";
-    private final String clientSecret = "e89bdce53af6b5b43f8749200dfde02e4958d18f";
-    private final String redirectUri = "https://www.google.com";
+    public final String REDIRECT_HOST = "www.google.com";
 
 /*    https://futurestud.io/tutorials/oauth-2-on-android-with-retrofit*/
 
@@ -48,9 +42,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        webView = (WebView) findViewById(R.id.main_activity_web_view); //get the webView from the layout
-
-        Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse("https://github.com/login/oauth/authorize"+ "?client_id="+clientId+"&scope=repo&reditect_uri="+redirectUri));
+        WebView webView =  findViewById(R.id.main_activity_web_view); //get the webView from the layout
 
         WebViewClient webViewClient = new WebViewClient(){
             @Override
@@ -59,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 String host = url.getHost();
                 if(host.equals("github.com")){
                     return false;
-                } else if(host.equals(redirectUri)){
+                } else if(host.equals(REDIRECT_HOST)){
                     String code = url.getQueryParameter("code");
                     App.getGitHubApi().getAccessToken(App.CLIENT_ID, App.CLIENT_SECRET, code)
                             .enqueue(new Callback<AccessTokenResponse>() {
@@ -85,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         webView.setWebViewClient(webViewClient);
-
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
