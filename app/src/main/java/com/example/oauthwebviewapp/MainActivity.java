@@ -1,19 +1,22 @@
 package com.example.oauthwebviewapp;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.example.oauthwebviewapp.model.AccessTokenResponse;
+import com.example.oauthwebviewapp.model.AuthParameters;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /*
 https://futurestud.io/tutorials/oauth-2-on-android-with-retrofit
@@ -32,8 +35,26 @@ Client Secret
 e89bdce53af6b5b43f8749200dfde02e4958d18f */
 
 public class MainActivity extends AppCompatActivity {
+    private static final String CLIENT_ID = "225f92b4f4dafca529ce";
+    private static final String SECRET_KEY = "e89bdce53af6b5b43f8749200dfde02e4958d18f";
+    private static final String STATE = "JM2ZKyOsoyJCkRy";
+    private static final String REDIRECT_URI = "https://www.google.com";
+    private static final String AUTH_SHORT_URL = "https://github.com/login";
+    private static final String AUTHORIZATION_URL = "https://github.com/login/oauth/authorize";
+    private static final String SCOPE_PARAM = "scope";
+    private static final String SCOPE_PARAM_VALUE = "repo";
+    private static final String CODE_PARAM = "code";
+    private static final String CLIENT_ID_PARAM = "client_id";
+    private static final String STATE_PARAM = "state";//
+    private static final String REDIRECT_URI_PARAM = "redirect_uri";
+    /*---------------------------------------*/
+    private static final String QUESTION_MARK = "?";
+    private static final String AMPERSAND = "&";
+    private static final String EQUALS = "=";
 
-    public final String REDIRECT_HOST = "www.google.com";
+    private WebView mWebView;
+    private ProgressDialog mPd;
+
 
 /*    https://futurestud.io/tutorials/oauth-2-on-android-with-retrofit*/
 
@@ -42,46 +63,109 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        WebView webView =  findViewById(R.id.main_activity_web_view); //get the webView from the layout
+        //get the webView from the layout
+        mWebView = findViewById(R.id.main_activity_web_view);
+        //Request focus for the webview
+        mWebView.requestFocus(View.FOCUS_DOWN);
 
-        WebViewClient webViewClient = new WebViewClient(){
+        WebSettings settings = mWebView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        //Show a progress dialog to the user
+        mPd = ProgressDialog.show(this, "", this.getString(R.string.loading), true);
+        //Set a custom web view client
+        mWebView.setWebViewClient(new WebViewClient(){
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                //Here we describe what we will do after page load finished is
+                //This method will be executed each time a page finished loading.
+                //The only we do is dismiss the progressDialog, in case we are showing any.
+                if(mPd !=null && mPd.isShowing()){
+                    mPd.dismiss();
+                }
+            }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                Uri url = request.getUrl();
-                String host = url.getHost();
-                if(host.equals("github.com")){
-                    return false;
-                } else if(host.equals(REDIRECT_HOST)){
-                    String code = url.getQueryParameter("code");
-                    App.getGitHubApi().getAccessToken(App.CLIENT_ID, App.CLIENT_SECRET, code)
-                            .enqueue(new Callback<AccessTokenResponse>() {
-                                @Override
-                                public void onResponse(Call<AccessTokenResponse> call, Response<AccessTokenResponse> response) {
-                                    MyPreferences.setToken(response.body().getAccessToken());
-                                    App.initApi();
-                                    startActivity(new Intent(MainActivity.this, CreateRepositoryActivity.class));
-                                    finish();
-                                }
-
-                                @Override
-                                public void onFailure(Call<AccessTokenResponse> call, Throwable t) {
-
-                                }
-                            });
-
-                } else {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, request.getUrl());
-                    startActivity(intent);
-                }
                 return super.shouldOverrideUrlLoading(view, request);
             }
-        };
-        webView.setWebViewClient(webViewClient);
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String authorizationUrl) {
+                //This method will be called when the Auth proccess redirect to our RedirectUri.
+                //We will check the url looking for our RedirectUri.
+                if(authorizationUrl.startsWith(REDIRECT_URI)){
+                    Log.i(getString(R.string.auth_tag), "startsWith(REDIRECT_URI)");
+                    Uri uri = Uri.parse(authorizationUrl);
+                    //We take from the url the authorizationToken and the state token. We have to check that the state token returned by the Service is the same we sent.
+                    //If not, that means the request may be a result of CSRF and must be rejected.
+                    String stateToken = uri.getQueryParameter(STATE_PARAM);
+                    if(stateToken==null || !stateToken.equals(STATE)){
+                        Log.e(getString(R.string.auth_tag), getString(R.string.state_not_match));
+                        return true;
+                    }
 
-        webView.loadUrl("https://github.com/login/oauth/authorize?client_id="+App.CLIENT_ID+"&scope=user%20repo");
+                    //If the user doesn't allow authorization to our application, the authorizationToken Will be null.
+                    String authorizationToken = uri.getQueryParameter(CODE_PARAM);
+                    if(authorizationToken==null){
+                        Log.i(getString(R.string.auth_tag), getString(R.string.wrong_user));
+                        return true;
+                    }
+                    Log.i(getString(R.string.auth_tag), getString(R.string.auth_token_recieved)+authorizationToken);
+
+                    AuthParameters params = new AuthParameters(CLIENT_ID
+                            , SECRET_KEY
+                            , authorizationToken
+                            , REDIRECT_URI
+                            , STATE);
+
+                    ApiUtils.getApiServiceAuth().auth(params)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnSubscribe(disposable -> mPd = ProgressDialog.show(MainActivity.this, "", MainActivity.this.getString(R.string.loading),true))
+                            .doFinally(() -> {if(mPd!=null && mPd.isShowing()){
+                                mPd.dismiss();
+                            }})
+                            .subscribe(answer -> {
+                                        if (answer.getAccessToken() != null){
+                                            Log.i(getString(R.string.auth_tag), getString(R.string.access_token) + answer.getAccessToken());
+
+                                            SharedPreferences preferences = MainActivity.this.getSharedPreferences(CreateRepositoryActivity.SP_USER_INFO, 0);
+                                            SharedPreferences.Editor editor = preferences.edit();
+
+                                            editor.putString(CreateRepositoryActivity.SP_ACCESS_TOKEN_PARAM, answer.getAccessToken());
+                                            editor.commit();
+
+                                            Intent startAddRepoActivity = new Intent(MainActivity.this, CreateRepositoryActivity.class);
+                                            MainActivity.this.startActivity(startAddRepoActivity);
+                                        }
+                                    },
+                                    throwable -> {});
+                }else{
+                    //Default behaviour
+                    Log.i(getString(R.string.auth_tag),getString(R.string.redirrecting_to)+authorizationUrl);
+                    if(authorizationUrl.startsWith(AUTH_SHORT_URL)) {
+                        mWebView.loadUrl(authorizationUrl);
+                    }
+                    else {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorizationUrl));
+                        startActivity(intent);
+                    }
+                }
+                return true;
+            }
+        });
+
 
     }
+
+    private static String getAuthorizationUrl(){
+        return AUTHORIZATION_URL
+                + QUESTION_MARK + SCOPE_PARAM + EQUALS + SCOPE_PARAM_VALUE
+                + AMPERSAND + CLIENT_ID_PARAM + EQUALS + CLIENT_ID
+                + AMPERSAND + STATE_PARAM + EQUALS + STATE
+                + AMPERSAND + REDIRECT_URI_PARAM + EQUALS + REDIRECT_URI;
+
+    }
+
 
 }

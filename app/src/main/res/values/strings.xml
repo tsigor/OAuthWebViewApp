@@ -1,4 +1,18 @@
 <resources>
     <string name="app_name">OAuthWebViewApp</string>
     <string name="loading">Loading...</string>
+    <string name="sending">Sending...</string>
+    <string name="created_successfully">Repository was created successfully</string>
+    <string name="r_with_name">Repository with name = \'</string>
+    <string name="already_exist">\' already exists</string>
+    <string name="error">Error!</string>
+    <string name="not_empty">Field can not be empty</string>
+    <string name="incorrect_url">Incorrect URL!</string>
+    <string name="auth_tag">Authorize</string>
+    <string name="state_not_match">State token doesn\'t match</string>
+    <string name="wrong_user">The user doesn\'t allow authorization.</string>
+    <string name="auth_token_recieved">Auth token received:</string>
+    <string name="access_token">This is the access Token:</string>
+    <string name="redirrecting_to">Redirecting to:</string>
+    <string name="loading_url">Loading Auth Url:</string>
 </resources>
