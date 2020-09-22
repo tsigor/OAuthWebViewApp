@@ -6,6 +6,7 @@ import com.example.oauthwebviewapp.model.AuthAnswer;
 import com.example.oauthwebviewapp.model.AuthParameters;
 import com.example.oauthwebviewapp.repository.CreateRepositoryRequest;
 import com.example.oauthwebviewapp.repository.CreateRepositoryResponse;
+import com.example.oauthwebviewapp.repository.Repository;
 import com.example.oauthwebviewapp.user.UserRequest;
 import com.example.oauthwebviewapp.user.UserResponse;
 
@@ -21,18 +22,10 @@ import retrofit2.http.POST;
 
 public interface GitHubApi {
 
-    @FormUrlEncoded
-    @POST("https://github.com/login/oauth/access_token")
-    @Headers("Accept: application/json")
-    Call<AccessTokenResponse> getAccessToken(@Field("client_id") String clientId,
-                                             @Field("client_secret") String clientSecret,
-                                             @Field("code") String code);
 
     @POST("user")
     Call<UserResponse> getUser(@Body UserRequest userRequest);
 
-    @POST("user")
-    Call<CreateRepositoryResponse> createRepository(@Body CreateRepositoryRequest createRepositoryRequest);
 
     @GET("user")
     Single<UserResponse> getUser();
