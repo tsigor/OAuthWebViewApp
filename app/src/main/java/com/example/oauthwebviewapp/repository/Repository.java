@@ -9,16 +9,17 @@ public class Repository {
     @SerializedName("description")
     private String mDescription;
 
-    @SerializedName("homepage")
-    private String mHomepage;
-
     @SerializedName("private")
     private boolean mPrivateX;
 
-    public Repository(String mName, String mDescription, String mHomepage, boolean mPrivateX) {
+    public Repository(String mName, String mDescription, boolean mPrivateX) {
         this.mName = mName;
         this.mDescription = mDescription;
-        this.mHomepage = mHomepage;
         this.mPrivateX = mPrivateX;
     }
+
+    public String getName() {
+        return mName;
+    }
+
 }

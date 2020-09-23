@@ -8,22 +8,21 @@
     android:orientation="vertical">
 
     <EditText
-        android:id="@+id/etRepositoryName"
+        android:id="@+id/etRepoName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter repository name"/>
+    <EditText
+        android:id="@+id/etRepoDescr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Repository description"/>
 
     <Button
-        android:id="@+id/btnCreateRepository"
+        android:id="@+id/btnCreateRepo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Create repository"/>
 
-    <Button
-        android:id="@+id/btnOpenRepository"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Open repository in browser"
-        android:visibility="gone"/>
 
 </LinearLayout>
