@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
     private ProgressDialog mPd;
 
 
-/*    https://futurestud.io/tutorials/oauth-2-on-android-with-retrofit*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +164,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        //Get the authorization Url
+        String authUrl = getAuthorizationUrl();
+        Log.i(getString(R.string.auth_tag),getString(R.string.loading_url)+authUrl);
+        //Load the authorization URL into the webView
+        mWebView.loadUrl(authUrl);
     }
 
     private static String getAuthorizationUrl(){
