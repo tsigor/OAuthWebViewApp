@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "107900028470",
+    "project_id": "oauthwebviewapp",
+    "storage_bucket": "oauthwebviewapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:107900028470:android:8ca8d4799ba5f73f9a7a97",
+        "android_client_info": {
+          "package_name": "com.example.oauthwebviewapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "107900028470-nocootns8uqao4dc851hd0n895fc68p9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcwaA6yt0PjMFu06X7DkIDN7UEp9q267I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "107900028470-nocootns8uqao4dc851hd0n895fc68p9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
